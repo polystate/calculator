@@ -1,0 +1,93 @@
+body{
+    margin: 0;
+    padding: 0;
+    background: lightgrey;
+}
+
+#calculator{
+    display: flex;
+    border: 1px solid black;
+    margin: 0 auto;
+    width: 20rem;
+    height: 30rem;
+    flex-direction: column;
+}
+
+#display{
+    /* height: 6rem; */
+    flex-grow: 1;
+    border: 1px solid lightgrey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background:  rgba(21, 21, 83, 0.85);
+    
+}
+
+#panel{
+    background: white;
+    border: 0.5px solid red;
+    height: 40%;
+    margin-left: 1.5rem;   
+    margin-right: 1.5rem;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    height: 3rem;
+}
+
+#panel-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+    gap: 0.25rem;
+}
+
+p{
+    font-size: 1.5rem;
+}
+
+#pike{
+    font-size: 2rem;
+}
+
+
+
+#seperator{
+    /* height: 8rem; */
+    flex-grow: 0.25;
+    border: 1px solid lightgrey;
+    background: rgba(21, 21, 83, 0.25);
+}
+
+#numbers{
+    border: 1px solid lightgrey;
+    flex-grow: 0.1;
+    background: rgba(21, 21, 83, 0.85);
+}
+
+#number-grid{
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 0.5rem;
+}
+
+.number{
+    background: white;
+    height: 3rem;
+    cursor: pointer;
+}
+
+.operand{
+    cursor: pointer;
+}
+
+.functional{
+    cursor: pointer;
+    background: rgba(173, 13, 13,0.75);
+    color: white;
+}
