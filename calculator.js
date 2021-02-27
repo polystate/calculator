@@ -1,5 +1,13 @@
-let numberSwitch = true;
+//Global Variables
+
 let inputArr = [];
+let operatorPressed = false;
+let decimalPressed = false;
+let divideByZero = false;
+let currentOperator = undefined;
+
+
+//Object Lookup Table
 
 const operators = {
     "+": add,
@@ -8,31 +16,31 @@ const operators = {
     "*": multiply
 }
 
+//Calculator Panel Object Itself
+
 const calculatorPanel = document.querySelectorAll("button").forEach(item => {
     item.addEventListener('click',function(){
-        if(inputArr[inputArr.length-1] !== "." && (!isNaN(item.innerText) || (item.innerText === "."))){
-        panelText.innerText = item.innerText;
-        panelInput.appendChild(panelText);
-        userInput = item.innerText;
-        } else{
-            userInput = item.innerText;
-        } 
+        
+        displayInput(item);
+        
         
         switch(userInput){
             case "+":
             case "-":
             case "÷":
             case "*":
-                console.log("Operator");
                 if(isNaN(inputArr[inputArr.length-1])) return;
                 if(checkOperationReady()){
                     console.log("Now we will really solve. Place answer in display.");
-                    answer = evaluateExpression();
+                    answer = roundNumber(evaluateExpression());
                     panelInput.innerText = answer;
                     inputArr = [];
                     inputArr.push(answer);
                 }
+                operatorPressed = true;
+                decimalPressed = false;
                 storeInput(userInput);
+                currentOperator = inputArr[inputArr.length-1];
                 break;
             case "0":
             case "1":
@@ -44,77 +52,66 @@ const calculatorPanel = document.querySelectorAll("button").forEach(item => {
             case "7":
             case "8":
             case "9":
-                console.log("Regular Digit");
-                storeInput(userInput);
-                if(inputArr.length > 1) panelInput.innerText = inputArr[inputArr.length-1];
+                currentInput = storeInput(userInput);
+                if(operatorPressed){
+                    panelInput.innerText = inputArr[inputArr.length-1];
+                    operatorPressed = false;
+                } 
                 break;
             case ".":
-                console.log("Decimal");
-                if(inputArr[inputArr.length-1] === ".") return;
+                if(inputArr.length === 0 || isNaN(inputArr[inputArr.length-1])) return;
+                if(decimalPressed){
+                    panelInput.innerText = panelInput.innerText.slice(0,-1);
+                    panelInput.innerText = panelInput.innerText.replace(/\s+/g, "");
+                    return;
+                } 
+                decimalPressed = true;
                 storeInput(userInput);
+                
                 break;
             case "=":
-                console.log("Equals");
+                if(!checkOperationReady()) return;
                 if(isNaN(inputArr[inputArr.length-1]) || inputArr.length === 1) return;
                 answer = evaluateExpression();
-                panelInput.innerText = answer;
+                panelInput.innerText = roundNumber(answer);
                 inputArr = [];
-                inputArr.push(answer);
+                inputArr.push(roundNumber(answer));
                 break;
             case "C":
-                console.log("Clears");
-                inputArr = [];
-                panelInput.innerText = "";
+                clearAll();
                 break;
         }
         checkOperationReady();
     })
-    
 })
-
-
-
-function numSwitch(){
-    if(numberSwitch){
-        num1 = storeInput(userInput);
-        numberSwitch = false;
-    } else if(!numberSwitch){
-        num2 = storeInput(userInput);
-        numberSwitch = true;
-    }
-}
 
 function evaluateExpression(){
     for(let i = 0; i < inputArr.length; i++){
-        if(isNaN(inputArr[i])){
+        if(isNaN(inputArr[i]) && inputArr[i] !== "."){
             num1 = inputArr.slice(0,i);
             num2 = inputArr.slice(i+1,inputArr.length);
             operator = inputArr[i];
             break;
         }
     }
+    if(operator === "÷" && num2[0] == 0){
+        alert("Dividing by zero is illegal in these parts.");
+        divideByZero = true;
+        return;
+    } 
     num1 = num1.join("");
     num2 = num2.join("");
     return operate(Number(num1),Number(num2),operators[operator]);
 }
 
 function checkOperationReady(){
-    // numStr = inputArr.join("");
-    // for(let str of numStr){
-    //     switch(str){
-    //         case "+":
-    //         case "-":
-    //         case "*":
-    //         case "÷":
-    //             break;
-    //         case ".":
-    //             console.log("Decimal inputted.")
-    //             if(isNaN(numStr[numStr.length-1])) return false;
-    //     }
-    // }
+    //If user tries to divide by zero
+    if(inputArr[0] === undefined){
+        clearAll();
+    } 
 
     for(let input of inputArr){
-        if(isNaN(input) && !isNaN(inputArr[inputArr.length-1])){
+        if(isNaN(input)){
             console.log("Ready to solve and operate.")
             return true;
         }
@@ -123,14 +120,75 @@ function checkOperationReady(){
 }
 
 function storeInput(input){
+    if(decimalPressed){
+        inputArr[inputArr.length-1] += input;
+        return;
+    }
     inputArr.push(input);
     console.log(inputArr);
     return inputArr;
 }
 
+function displayInput(item){
+    if((inputArr.length === 0 || isNaN(inputArr[inputArr.length-1])) && item.innerText === "."){
+        return;
+    } 
+    if((!isNaN(item.innerText) || (item.innerText === "."))){
+        panelText.innerText = item.innerText;
+        panelInput.appendChild(panelText);
+        userInput = item.innerText;
+        } else{
+            userInput = item.innerText;
+        } 
+    if(inputArr.length > 20){
+            userInput = "C";
+    }
+}
+
 function selectValue(){
     panelInput = document.getElementById("panel-input");
     panelText = document.createElement("p");
+}
+
+function clearAll(){
+    operatorPressed = false;
+    decimalPressed = false;
+    divideByZero = false;
+    inputArr = [];
+    panelInput.innerText = "";
+}
+
+function backSpace(){
+    lastInput = inputArr[inputArr.length-1];
+    if(!operatorPressed && !decimalPressed){
+        inputArr.pop();
+        panelInput.innerText = panelInput.innerText.replace(/\s+/g, "");
+        panelArr = panelInput.innerText.split("");
+        panelArr.pop();
+        panelInput.innerText = panelArr.join("");
+    } else if(decimalPressed){
+        if(!checkOperationReady()){
+        strInput = inputArr[inputArr.length-1];
+        strInput = strInput.substring(0,strInput.length-1);
+        inputArr[inputArr.length-1] = strInput;
+        panelInput.innerText = inputArr.join("");
+        } else if(checkOperationReady()){
+            strInput = inputArr.join("");
+            operationIndex = strInput.search(/[+|-|*|÷]/g);
+            secondNumber = strInput.slice(operationIndex+1);
+            secondNumber = secondNumber.substring(0,secondNumber.length-1);
+            inputArr[inputArr.length-1] = secondNumber;
+            panelInput.innerText = secondNumber;
+        }
+    }
+}
+
+function roundNumber(num){
+    if(divideByZero) return;
+    numStr = num.toString();
+    parse = Number.parseFloat(numStr).toPrecision(10);
+    parse = Number(parse);
+    return parse;
 }
 
 function operate(num1,num2,operator){
@@ -152,26 +210,3 @@ function multiply(num1,num2){
 function divide(num1,num2){
     return num1/num2;
 }
-
-
-
-
-/*
-1. Number is Entered into Panel
-2. Operator is pressed, first number remains in panel.
-3. [Second Number is entered and clears screen/replaces first number.]
-4. [Second Operator is entered, the screen is cleared, and the answer of the first three steps appears on the screen.]
-[Note: It is right here that answer replaces the first number that is entered variable if necessary.]
-5. [Third Number is entered and clears screen, replacing answer.]
-6. [Fourth Operator is entered, the screen is cleared, and the answer of the previous two steps appears on the screen.]
-7. [Steps 4-6 basically loop and repeat themselves. Steps 1-3 unique.]
-*/
-
-
-
-/*Fixes
-    1. Fix problems with decimal point.
-    2. Allow multiple digits to be typed into panel without
-    overwriting. The only time number should overwrite is if it involves
-    'answer' I believe.
-*/
