@@ -225,7 +225,7 @@ function squareRoot(){
     num = panelInput.innerText.replace(/\s+/g, "");
     if(num === "") return;
     num = Math.sqrt(num);
-    if(num < 0 || answer < 0){
+    if(num < 0){
         clearAll();
         return;
     } 
