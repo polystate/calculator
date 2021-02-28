@@ -47,7 +47,7 @@ body{
     margin-right: 0.5rem;
     font-size: 1.5rem;
     color: rgb(59, 240, 59);
-    font-style:oblique;
+    font-family: 'Graduate', Arial, Helvetica, sans-serif;
     /* gap: 0.25rem; */
 }
 
@@ -130,4 +130,8 @@ button:hover{
 #clear-button{
     background: rgba(173, 13, 13,0.75);
 }
+
+/* #factorial{
+    font-family: 'Graduate';
+} */
 

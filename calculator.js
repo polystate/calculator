@@ -13,7 +13,10 @@ const operators = {
     "+": add,
     "-": subtract,
     "÷": divide,
-    "*": multiply
+    "*": multiply,
+    "√": squareRoot,
+    "𝑥^": exponent,
+    "𝑥!": factorial
 }
 
 //Calculator Panel Object Itself
@@ -33,6 +36,7 @@ const calculatorPanel = document.querySelectorAll("button").forEach(item => {
                 if(checkOperationReady()){
                     console.log("Now we will really solve. Place answer in display.");
                     answer = roundNumber(evaluateExpression());
+                    
                     panelInput.innerText = answer;
                     inputArr = [];
                     inputArr.push(answer);
@@ -140,7 +144,10 @@ function displayInput(item){
         } else{
             userInput = item.innerText;
         } 
-    if(inputArr.length > 20){
+    
+    //Check to make sure userinput doesn't exceed panel width
+    panelText = panelInput.innerText.replace(/\s+/g, "");
+    if(panelText.length > 16){
             userInput = "C";
     }
 }
@@ -188,6 +195,9 @@ function roundNumber(num){
     numStr = num.toString();
     parse = Number.parseFloat(numStr).toPrecision(10);
     parse = Number(parse);
+    if(parse.toString().length > 16 && decimalPressed === false){
+        parse = parse.toExponential();
+    }
     return parse;
 }
 
@@ -209,4 +219,46 @@ function multiply(num1,num2){
 
 function divide(num1,num2){
     return num1/num2;
+}
+
+function squareRoot(){
+    num = panelInput.innerText.replace(/\s+/g, "");
+    if(num === "") return;
+    num = Math.sqrt(num);
+    if(num < 0 || answer < 0){
+        clearAll();
+        return;
+    } 
+    panelInput.innerText = roundNumber(num);
+    answer = roundNumber(num);
+    inputArr = [];
+    inputArr.push(answer);
+}
+
+function exponent(num1,power){
+    answer = 1;
+    for(let i = 0; i < power; i++){
+        answer *= num1;
+    }
+    return answer;
+}
+
+function factorial(){
+    num = panelInput.innerText.replace(/\s+/g, "");
+    if(num === "") return;
+    if(num > 170){
+        panelInput.innerHTML = Infinity + " :(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        inputArr.push(Infinity);
+        setTimeout(clearAll,1500);
+        return;
+    }
+    count = num - 1;
+    while(count > 0){
+        num = num * count;
+        count--;
+    }
+    panelInput.innerText = roundNumber(num);
+    answer = roundNumber(num);
+    inputArr = [];
+    inputArr.push(answer);
 }
